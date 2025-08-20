@@ -103,18 +103,18 @@ class RdsTunnel < Formula
     # Each resource is staged (extracted) and then installed using pip.
     resources.each do |r|
       r.stage do
-        system venv/"bin/pip", "install", Pathname.pwd
+        system venv + "bin/pip", "install", Pathname.pwd
       end
     end
 
     # Install the main rds-tunnel package into the virtual environment.
     # `buildpath` refers to the directory where the main tarball was extracted.
-    system venv/"bin/pip", "install", buildpath
+    system venv + "bin/pip", "install", buildpath
 
     # Create a shim for the main executable.
     # Homebrew expects executables to be in 'bin'.
     # Ensure 'rdst' is the correct console_script entry point from your pyproject.toml.
-    bin.install venv/"bin/rdst"
+    bin.install venv + "bin/rdst"
   end
 
   test do
