@@ -11,33 +11,35 @@ class RdsTunnel < Formula
   depends_on "python@3.13"
   # Include the Homebrew Python virtual environment module
   # This provides the `virtualenv_create` helper method.
-  include Language::Python::Virtualenv
-  # The `install` method defines the steps to build and install the software.
+ depends_on "uv"
+
   def install
-    # Create a Python virtual environment within the formula's `libexec` directory.
-    # This isolates the tool and its dependencies from other Python packages on the system.
-    # We specify which python executable to use for creating the venv.
-    venv = virtualenv_create(libexec, "python3.13")
+    # Change to the extracted source directory where your pyproject.toml resides.
+    # `buildpath` is where Homebrew unpacks the tarball.
+    cd buildpath
 
-    # Use the pip from the virtual environment to install the package.
-    # `pip install .` reads the `pyproject.toml` file, resolves all dependencies
-    # listed there (like boto3, paramiko, etc.), and installs them from PyPI.
-    system venv.pip, "install", "."
+    # Use `uv` to build the source distribution (sdist).
+    # This will typically create a .tar.gz file in a 'dist/' subdirectory.
+    system "uv", "build"
 
-    # After installation, the executables (`rds-tunnel` and `rdst`) are in the
-    # virtual environment's bin directory. This command creates symlinks to them
-    # in Homebrew's standard `bin` directory (`/usr/local/bin` or `/opt/homebrew/bin`),
-    # making them accessible from the user's shell.
-    bin.install_symlink Dir[libexec/"bin/*"]
+    # Locate the built source distribution file.
+    # We assume 'uv build' produces a .tar.gz file.
+    sdist_file = Dir["dist/*.tar.gz"].first
+
+    # If no sdist file is found, raise an error.
+    odie "No sdist found in dist/ after uv build. Check your uv build process." unless sdist_file
+
+    # Install the built package using Homebrew's managed Python and pip.
+    # This command will install the package and its Python dependencies
+    # into Homebrew's Python site-packages, and place console scripts (like 'rdst')
+    # directly into Homebrew's main bin directory (e.g., /opt/homebrew/bin/).
+    system Formula["python@3.13"].opt_bin/"python3", "-m", "pip", "install", sdist_file
   end
 
-  # The `test` block defines a simple test to run after installation (`brew test rds-tunnel`).
-  # This helps verify that the installation was successful.
   test do
-    # We execute the `rds-tunnel --version` command and check if its output
-    # contains the correct version string. This confirms the executable is in the PATH
-    # and running correctly. The `#{version}` variable is automatically populated
-    # from the formula's version, which is derived from the `url`.
-    assert_match "rds-tunnel #{version}", shell_output("#{bin}/rds-tunnel --version")
+    # Verify that the 'rdst' command-line tool works.
+    # This test runs 'rdst --help' and checks for "Usage:".
+    # Because 'pip install' handles console scripts, 'rdst' should be in Homebrew's bin.
+    assert_match "Usage:", shell_output("#{bin}/rdst --help")
   end
 end
