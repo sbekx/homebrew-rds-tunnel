@@ -33,7 +33,7 @@ class RdsTunnel < Formula
     # This command will install the package and its Python dependencies
     # into Homebrew's Python site-packages, and place console scripts (like 'rdst')
     # directly into Homebrew's main bin directory (e.g., /opt/homebrew/bin/).
-    system Formula["python@3.13"].opt_bin/"python3", "-m", "pip", "install", sdist_file
+    system Formula["python@3.13"].opt_bin/"python3", "-m", "pip", "install", sdist_file, "--user"
   end
 
   test do
