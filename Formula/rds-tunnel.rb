@@ -4,7 +4,7 @@ class RdsTunnel < Formula
   # Sourcing directly from a GitHub Release archive
   # IMPORTANT: You must create a release (e.g., with tag v1.0.2rc1) on your GitHub repo
   # for this URL to be valid. The SHA256 will also change.
-  url "https://github.com/sbekx/rds-tunnel/archive/refs/tags/v1.0.2rc1.tar.gz"
+  url "https://github.com/sbekx/rds-tunnel/releases/download/1.0.2/rds_tunnel-1.0.2.tar.gz"
   sha256 "8a7e49ffea0d893ad8154fae1407e84743955daa05256343483da751059b7407" # This will be different from PyPI's SHA256
   license "Apache-2.0"
 
