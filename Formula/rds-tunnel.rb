@@ -10,6 +10,10 @@ class RdsTunnel < Formula
 
   depends_on "python@3.12"
 
+  # Include the Homebrew Python virtual environment module
+  # This provides the `virtualenv_install_with_resources` helper method.
+  include Language::Python::Virtualenv
+
   # Define resources for all Python dependencies.
   # These URLs will still point to PyPI, as dependencies are typically from PyPI.
   resource "bcrypt" do
