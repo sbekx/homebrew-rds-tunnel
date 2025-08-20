@@ -24,7 +24,7 @@ class RdsTunnel < Formula
 
     # Locate the built source distribution file.
     # We assume 'uv build' produces a .tar.gz file.
-    sdist_file = Dir["dist/*.tar.gz"].first
+    sdist_file = Dir["dist/*.whl"].first
 
     # If no sdist file is found, raise an error.
     odie "No sdist found in dist/ after uv build. Check your uv build process." unless sdist_file
