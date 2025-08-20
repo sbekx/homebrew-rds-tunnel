@@ -9,8 +9,10 @@ class RdsTunnel < Formula
   license "Apache-2.0"
 
   depends_on "python@3.12"
-
-    # The `install` method defines the steps to build and install the software.
+  # Include the Homebrew Python virtual environment module
+  # This provides the `virtualenv_create` helper method.
+  include Language::Python::Virtualenv
+  # The `install` method defines the steps to build and install the software.
   def install
     # Create a Python virtual environment within the formula's `libexec` directory.
     # This isolates the tool and its dependencies from other Python packages on the system.
