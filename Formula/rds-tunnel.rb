@@ -5,13 +5,16 @@ class RdsTunnel < Formula
   # IMPORTANT: You must create a release (e.g., with tag v1.0.2rc1) on your GitHub repo
   # for this URL to be valid. The SHA256 will also change.
   url "https://github.com/sbekx/rds-tunnel/releases/download/1.0.2/rds_tunnel-1.0.2.tar.gz"
-  sha256 "8a7e49ffea0d893ad8154fae1407e84743955daa05256343483da751059b7407" # This will be different from PyPI's SHA256
+  sha256 "8a7e49ffea0d893ad8154fae1407e84743955daa05256343483da751059b7407"
   license "Apache-2.0"
 
   depends_on "python@3.12"
+  # Add Rust as a build dependency because some Python packages (like bcrypt)
+  # require a Rust compiler for their native extensions.
+  depends_on "rust" => :build
 
   # Include the Homebrew Python virtual environment module
-  # This provides the `virtualenv_install_with_resources` helper method.
+  # This provides the `virtualenv_create` helper method.
   include Language::Python::Virtualenv
 
   # Define resources for all Python dependencies.
@@ -92,10 +95,31 @@ class RdsTunnel < Formula
   end
 
   def install
-    virtualenv_install_with_resources
+    # Create a virtual environment for the Python package.
+    # We pass the desired Python version to ensure compatibility.
+    venv = virtualenv_create(libexec, "python3.12")
+
+    # Install all declared resources (dependencies) into the virtual environment.
+    # Each resource is staged (extracted) and then installed using pip.
+    resources.each do |r|
+      r.stage do
+        system venv/"bin/pip", "install", Pathname.pwd
+      end
+    end
+
+    # Install the main rds-tunnel package into the virtual environment.
+    # `buildpath` refers to the directory where the main tarball was extracted.
+    system venv/"bin/pip", "install", buildpath
+
+    # Create a shim for the main executable.
+    # Homebrew expects executables to be in 'bin'.
+    # Ensure 'rdst' is the correct console_script entry point from your pyproject.toml.
+    bin.install venv/"bin/rdst"
   end
 
   test do
+    # Verify that the 'rdst' command-line tool works.
+    # This test runs 'rdst --help' and checks for "Usage:".
     assert_match "Usage:", shell_output("#{bin}/rdst --help")
   end
 end
