@@ -8,7 +8,7 @@ class RdsTunnel < Formula
   sha256 "8a7e49ffea0d893ad8154fae1407e84743955daa05256343483da751059b7407"
   license "Apache-2.0"
 
-  depends_on "python@3.12"
+  depends_on "python@3.13"
   # Include the Homebrew Python virtual environment module
   # This provides the `virtualenv_create` helper method.
   include Language::Python::Virtualenv
@@ -17,7 +17,7 @@ class RdsTunnel < Formula
     # Create a Python virtual environment within the formula's `libexec` directory.
     # This isolates the tool and its dependencies from other Python packages on the system.
     # We specify which python executable to use for creating the venv.
-    venv = virtualenv_create(libexec, "python3.12")
+    venv = virtualenv_create(libexec, "python3.13")
 
     # Use the pip from the virtual environment to install the package.
     # `pip install .` reads the `pyproject.toml` file, resolves all dependencies
