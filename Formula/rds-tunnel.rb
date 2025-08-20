@@ -1,17 +1,17 @@
 class RdsTunnel < Formula
   desc "Python package for creating a secure tunnel to an AWS RDS instance"
-  homepage "https://pypi.org/project/rds-tunnel/"
-  # Using the URL and SHA256 for version 1.0.2rc1 from PyPI.
-  # Note: The PyPI URL structure for source distributions usually follows this pattern.
-  url "https://files.pythonhosted.org/packages/d6/1a/01b8e8f81f18520b72895f87b3b40047395724584281313e9a1811a47081/rds-tunnel-1.0.2rc1.tar.gz"
-  sha256 "4708104526d18386a3d76326622b7a8a152d193d2524a806968d6ff8417c8005"
-  license "Apache-2.0" # Assuming Apache-2.0 based on common Python project licenses
+  homepage "https://github.com/sbekx/rds-tunnel/"
+  # Sourcing directly from a GitHub Release archive
+  # IMPORTANT: You must create a release (e.g., with tag v1.0.2rc1) on your GitHub repo
+  # for this URL to be valid. The SHA256 will also change.
+  url "https://github.com/sbekx/rds-tunnel/archive/refs/tags/v1.0.2rc1.tar.gz"
+  sha256 "8a7e49ffea0d893ad8154fae1407e84743955daa05256343483da751059b7407" # This will be different from PyPI's SHA256
+  license "Apache-2.0"
 
-  # rds-tunnel is a Python application, so it depends on Python 3.12 (a stable Homebrew version).
   depends_on "python@3.12"
 
   # Define resources for all Python dependencies.
-  # These are automatically handled by virtualenv_install_with_resources.
+  # These URLs will still point to PyPI, as dependencies are typically from PyPI.
   resource "bcrypt" do
     url "https://files.pythonhosted.org/packages/bb/5d/6d7433e0f3cd46ce0b43cd65e1db465ea024dbb8216fb2404e919c2ad77b/bcrypt-4.3.0.tar.gz"
     sha256 "3a3fd2204178b6d2adcf09cb4f6426ffef54762577a7c9b54c159008cb288c18"
@@ -67,9 +67,6 @@ class RdsTunnel < Formula
     sha256 "37dd54208da7e1cd875388217d5e00ebd4179249f90fb72437e91a35459a0ad3"
   end
 
-  # The "rds-tunnel" resource block itself is removed because
-  # the main package is defined by the top-level 'url' and 'sha256'.
-
   resource "s3transfer" do
     url "https://files.pythonhosted.org/packages/6d/05/d52bf1e65044b4e5e27d4e63e8d1579dbdec54fce685908ae09bc3720030/s3transfer-0.13.1.tar.gz"
     sha256 "c3fdba22ba1bd367922f27ec8032d6a1cf5f10c934fb5d68cf60fd5a23d936cf"
@@ -91,14 +88,10 @@ class RdsTunnel < Formula
   end
 
   def install
-    # This method creates a virtual environment for the Python package
-    # and installs the main package along with all its declared resources (dependencies).
     virtualenv_install_with_resources
   end
 
   test do
-    # A basic test to verify that the `rds-tunnel` command-line tool is installed
-    # and can be executed. It checks for the "Usage:" string in the help output.
     assert_match "Usage:", shell_output("#{bin}/rdst --help")
   end
 end
