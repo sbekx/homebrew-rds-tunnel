@@ -21,7 +21,7 @@ class RdsTunnel < Formula
     odie "No wheel found in dist/ after uv build." unless whl_file
 
     # Install the wheel into the virtual environment using uv
-    system libexec/"bin/uv", "pip", "install", whl_file
+    system "uv", "pip", "install", whl_file
 
     # Symlink the executables from the virtual environment
     bin.install_symlink Dir[libexec/"bin/*"]
