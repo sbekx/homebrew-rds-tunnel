@@ -16,12 +16,12 @@ class RdsTunnel < Formula
     system "uv", "venv", libexec, "--python", Formula["python@3.13"].opt_bin/"python3.13"
 
     # Build the wheel using uv
-    system "uv", "build"
+    system "uv", "build", "--out-dir", "dist"
     whl_file = Dir["dist/*.whl"].first
     odie "No wheel found in dist/ after uv build." unless whl_file
 
     # Install the wheel into the virtual environment using uv
-    system "uv", "pip", "install", whl_file
+    system "uv", "pip", "install", "--python", libexec/"bin/python", whl_file
 
     # Symlink the executables from the virtual environment
     bin.install_symlink Dir[libexec/"bin/*"]
