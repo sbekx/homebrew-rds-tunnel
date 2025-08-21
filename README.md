@@ -11,7 +11,8 @@ First, you need to "tap" this Homebrew repository. This tells Homebrew where to 
 ```shell
 brew tap sbekx/rds-tunnel
 ```
-#### 2. Install `rds-tunnel`
+
+#### 2. Install `rds-tunnel`
 Once the tap is added, you can install the rds-tunnel package:
 ```shell
 brew install rds-tunnel
