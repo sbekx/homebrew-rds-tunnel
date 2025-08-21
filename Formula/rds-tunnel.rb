@@ -9,31 +9,22 @@ class RdsTunnel < Formula
   license "Apache-2.0"
 
   depends_on "python@3.13"
-  # Include the Homebrew Python virtual environment module
-  # This provides the `virtualenv_create` helper method.
- depends_on "uv"
+  depends_on "uv"
 
   def install
-    # Change to the extracted source directory where your pyproject.toml resides.
-    # `buildpath` is where Homebrew unpacks the tarball.
-    cd buildpath
+    # Create a virtual environment using uv
+    system "uv", "venv", libexec, "--python", Formula["python@3.13"].opt_bin/"python3.13"
 
-    # Use `uv` to build the source distribution (sdist).
-    # This will typically create a .tar.gz file in a 'dist/' subdirectory.
-    system "uv", "build"
+    # Build the wheel using uv
+    system "uv", "build", "--out", "dist"
+    whl_file = Dir["dist/*.whl"].first
+    odie "No wheel found in dist/ after uv build." unless whl_file
 
-    # Locate the built source distribution file.
-    # We assume 'uv build' produces a .tar.gz file.
-    sdist_file = Dir["dist/*.whl"].first
+    # Install the wheel into the virtual environment using uv
+    system libexec/"bin/uv", "pip", "install", whl_file
 
-    # If no sdist file is found, raise an error.
-    odie "No sdist found in dist/ after uv build. Check your uv build process." unless sdist_file
-
-    # Install the built package using Homebrew's managed Python and pip.
-    # This command will install the package and its Python dependencies
-    # into Homebrew's Python site-packages, and place console scripts (like 'rdst')
-    # directly into Homebrew's main bin directory (e.g., /opt/homebrew/bin/).
-    system "pip", "install", sdist_file, "--user", "--break-system-packages"
+    # Symlink the executables from the virtual environment
+    bin.install_symlink Dir[libexec/"bin/*"]
   end
 
   test do
