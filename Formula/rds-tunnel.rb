@@ -16,7 +16,7 @@ class RdsTunnel < Formula
     system "uv", "venv", libexec, "--python", Formula["python@3.13"].opt_bin/"python3.13"
 
     # Build the wheel using uv
-    system "uv", "build", "--out", "dist"
+    system "uv", "build"
     whl_file = Dir["dist/*.whl"].first
     odie "No wheel found in dist/ after uv build." unless whl_file
 
